@@ -11,7 +11,7 @@ import sys
 
 # Load credentials from client_secret.json
 try:
-    with open("client_secret.json", "r") as f:
+    with open("utils\client_secret.json", "r") as f:
         secrets = json.load(f)["web"]
 except FileNotFoundError:
     print("Error: 'client_secret.json' not found. Download it from Google Cloud Console (APIs & Services > Credentials > OAuth 2.0 Client ID).")
