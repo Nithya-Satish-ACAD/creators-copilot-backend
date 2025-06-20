@@ -1,0 +1,6 @@
+firebase-admin
+pyrebase
+legacy-cgi
+setuptools
+urllib3
+requests-toolbelt
