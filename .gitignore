@@ -1,3 +1,2 @@
-config\firebase_config.py
 config\serviceAccountKey.json
 .env
