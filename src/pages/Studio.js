@@ -35,6 +35,7 @@ export default function Studio() {
   const [sessionUploadedFiles, setSessionUploadedFiles] = useState([]);
 
   const handleFileChange = (e) => {
+    // backend integration: upload files to backend
     const newFiles = Array.from(e.target.files).map(file => ({
       name: file.name,
       type: file.type,
@@ -55,6 +56,7 @@ export default function Studio() {
 
   const handleAddContentModalAdd = () => {
     setShowAddContentModal(false);
+    // backend integration: add uploaded/selected references to backend knowledge base
     // You can handle the selected option here
   };
 

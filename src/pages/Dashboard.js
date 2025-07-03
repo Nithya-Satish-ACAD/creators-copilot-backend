@@ -126,6 +126,7 @@ export default function Dashboard() {
   const handleModalCreate = () => {
     const url = curriculumOptions[selectedOption].url;
     setShowCurriculumModal(false);
+    // backend integration: create curriculum component in backend
     navigate(`/studio/${url}`);
   };
 
@@ -138,6 +139,7 @@ export default function Dashboard() {
   };
   const handleAddContentModalAdd = () => {
     setShowAddContentModal(false);
+    // backend integration: add uploaded/selected references to backend knowledge base
     // You can handle the selected option here
   };
 

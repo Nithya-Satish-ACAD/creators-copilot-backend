@@ -45,6 +45,7 @@ export default function SettingsModal({ open, onClose, onSave }) {
   };
 
   const handleSave = () => {
+    // backend integration: save settings to backend
     onSave && onSave({
       levels: selectedLevels,
       areas: selectedAreas,

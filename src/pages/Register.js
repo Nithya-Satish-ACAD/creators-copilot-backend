@@ -13,7 +13,7 @@ export default function Register() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // backend integration
+    // backend integration: replace with real registration API call
     if (register(username, password)) {
       setSuccess(true);
       setTimeout(() => navigate("/login"), 1000);

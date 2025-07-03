@@ -12,7 +12,7 @@ export default function Login() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // backend integration
+    // backend integration: replace with real authentication API call
     if (login(username, password)) {
       navigate("/courses");
     } else {
