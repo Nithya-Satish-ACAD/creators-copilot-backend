@@ -36,3 +36,61 @@
     transform: rotate(360deg);
   }
 }
+
+html {
+  box-sizing: border-box;
+}
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+body, #root {
+  width: 100vw;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  background: #fafbfc;
+}
+
+@media (max-width: 900px) {
+  .modal-custom {
+    max-width: 98vw !important;
+    min-width: 0 !important;
+    padding: 18px 6vw !important;
+  }
+  .course-card {
+    width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 0 18px 0 !important;
+  }
+  .main-layout {
+    flex-direction: column !important;
+    min-width: 0 !important;
+    gap: 12px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .modal-custom {
+    max-width: 99vw !important;
+    min-width: 0 !important;
+    padding: 10px 2vw !important;
+  }
+  .course-card {
+    width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 0 12px 0 !important;
+  }
+  .main-layout {
+    flex-direction: column !important;
+    min-width: 0 !important;
+    gap: 8px !important;
+  }
+  h2, h3, h4 {
+    font-size: 1.1rem !important;
+  }
+  input, textarea, button {
+    font-size: 1rem !important;
+    padding: 8px 10px !important;
+  }
+}

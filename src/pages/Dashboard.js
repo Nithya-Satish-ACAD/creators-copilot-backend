@@ -147,7 +147,7 @@ export default function Dashboard() {
     <div style={{ minHeight: "100vh", background: "#fafbfc", display: "flex", flexDirection: "column" }}>
       <Header />
       <TopRow onSettingsClick={() => setShowSettingsModal(true)} />
-      <div style={{ display: "flex", minWidth: 1200, maxWidth: 1200, margin: "0 auto", gap: 24, alignItems: "flex-start", flex: 1, height: `calc(100vh - ${HEADER_HEIGHT + TOPROW_HEIGHT}px)` }}>
+      <div className="main-layout" style={{ display: "flex", gap: 24, alignItems: "flex-start", flex: 1, height: `calc(100vh - ${HEADER_HEIGHT + TOPROW_HEIGHT}px)`, padding: "0 5vw" }}>
         {/* Main Content: 3 cards stacked vertically, equal height */}
         <div style={{ flex: 2, display: "flex", flexDirection: "column", gap: GAP, height: "100%" }}>
           <SectionCard
@@ -171,7 +171,7 @@ export default function Dashboard() {
           />
         </div>
         {/* Sidebar */}
-        <div style={{ flex: 1, minWidth: 320, height: "100%" }}>
+        <div className="sidebar" style={{ flex: 1, minWidth: 280, height: "100%" }}>
           <Sidebar onAddContentClick={handleAddContentClick} />
         </div>
       </div>

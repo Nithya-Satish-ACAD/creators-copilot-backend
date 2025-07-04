@@ -89,6 +89,22 @@ export default function Courses() {
     boxShadow: "0 2px 8px #f00a"
   };
 
+  const createCourseModalStyle = {
+    background: "#fff",
+    borderRadius: 16,
+    boxShadow: "0 2px 16px #0002",
+    padding: "36px 32px 32px 32px",
+    minWidth: 400,
+    maxWidth: 700,
+    width: "100%",
+    maxHeight: "95vh",
+    overflowY: "auto",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    boxSizing: "border-box"
+  };
+
   return (
     <div style={{ minHeight: "100vh", background: "#fff", display: "flex", flexDirection: "column" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -111,7 +127,7 @@ export default function Courses() {
           </button>
         )}
       </div>
-      <div style={{ flex: 1, display: "flex", alignItems: courses.length === 0 ? "center" : "flex-start", justifyContent: courses.length === 0 ? "center" : "flex-start", width: "100%" }}>
+      <div className="main-layout" style={{ flex: 1, display: "flex", alignItems: courses.length === 0 ? "center" : "flex-start", justifyContent: courses.length === 0 ? "center" : "flex-start", width: "100%" }}>
         {courses.length === 0 ? (
           <div style={{ textAlign: "center", width: "100%" }}>
             <div style={{ marginBottom: 16, fontSize: 17 }}>No courses created yet.</div>
@@ -123,10 +139,11 @@ export default function Courses() {
             </button>
           </div>
         ) : (
-          <div style={{ display: "flex", gap: 32, flexWrap: "wrap", alignItems: "flex-start", margin: "32px 0 0 32px" }}>
+          <div style={{ display: "flex", gap: 32, flexWrap: "wrap", alignItems: "flex-start", margin: "32px 0 0 32px", width: "100%" }}>
             {courses.map((course, idx) => (
               <div
                 key={idx}
+                className="course-card"
                 onClick={() => handleCardClick(course)}
                 style={{
                   width: 320,
@@ -148,7 +165,7 @@ export default function Courses() {
                 <div style={{ fontWeight: 700, fontSize: 19 }}>{course.title}</div>
                 <button
                   onClick={e => handleDeleteCourse(idx, e)}
-                  style={{ ...trashBtnStyle }}
+                  style={trashBtnStyle}
                   title="Delete Course"
                   onMouseOver={e => Object.assign(e.currentTarget.style, trashBtnHoverStyle)}
                   onMouseOut={e => Object.assign(e.currentTarget.style, trashBtnStyle)}
@@ -160,36 +177,36 @@ export default function Courses() {
           </div>
         )}
       </div>
-      <Modal open={showModal} onClose={handleClose}>
-        <div style={{ fontWeight: 700, fontSize: 22, marginBottom: 18 }}>Create Course</div>
-        <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 8 }}>Course Name</div>
+      <Modal open={showModal} onClose={handleClose} modalStyle={createCourseModalStyle} className="modal-custom">
+        <div style={{ fontWeight: 700, fontSize: 28, marginBottom: 18 }}>Create Course</div>
+        <div style={{ fontWeight: 600, fontSize: 16, marginBottom: 8 }}>Course Name</div>
         <input
           type="text"
           placeholder="e.g Web Development with JS"
           value={courseName}
           onChange={e => setCourseName(e.target.value)}
-          style={{ width: "100%", padding: "10px 12px", fontSize: 15, borderRadius: 6, border: "1px solid #ccc", marginBottom: 18 }}
+          style={{ width: "100%", maxWidth: "100%", boxSizing: "border-box", padding: "12px 14px", fontSize: 16, borderRadius: 8, border: "1px solid #ccc", marginBottom: 18 }}
           required
         />
-        <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 8, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div style={{ fontWeight: 600, fontSize: 16, marginBottom: 8, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <span>About the course</span>
           <button
             onClick={handleGenerateAI}
-            style={{ fontWeight: 500, fontSize: 14, color: "#222", background: "#f5f5f5", border: "1px solid #ccc", borderRadius: 6, padding: "4px 12px", display: "flex", alignItems: "center", gap: 4, cursor: "pointer" }}
+            style={{ fontWeight: 500, fontSize: 15, color: "#222", background: "#f5f5f5", border: "1px solid #ccc", borderRadius: 8, padding: "6px 16px", display: "flex", alignItems: "center", gap: 6, cursor: "pointer" }}
           >
-            <span style={{ fontSize: 18 }}>✨</span> Generate with AI
+            <span style={{ fontSize: 20 }}>✨</span> Generate with AI
           </button>
         </div>
         <textarea
           placeholder="e.g This course helps the students to have a comprehensive knowledge about web development"
           value={courseDesc}
           onChange={e => setCourseDesc(e.target.value)}
-          style={{ width: "100%", minHeight: 80, padding: "10px 12px", fontSize: 15, borderRadius: 6, border: "1px solid #ccc", marginBottom: 24, resize: "vertical" }}
+          style={{ width: "100%", maxWidth: "100%", boxSizing: "border-box", minHeight: 90, padding: "12px 14px", fontSize: 15, borderRadius: 8, border: "1px solid #ccc", marginBottom: 28, resize: "vertical" }}
           required
         />
-        <div style={{ display: "flex", justifyContent: "flex-end", gap: 12 }}>
-          <button onClick={handleClose} style={{ padding: "8px 18px", borderRadius: 6, border: "1px solid #bbb", background: "#fff", fontWeight: 500, fontSize: 15, cursor: "pointer" }}>Cancel</button>
-          <button onClick={handleGetStarted} disabled={!isFormValid} style={{ padding: "8px 18px", borderRadius: 6, border: "none", background: isFormValid ? "#222" : "#888", color: "#fff", fontWeight: 500, fontSize: 15, cursor: isFormValid ? "pointer" : "not-allowed" }}>Get started</button>
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: 16, flexWrap: "wrap" }}>
+          <button onClick={handleClose} style={{ padding: "10px 22px", borderRadius: 8, border: "1px solid #bbb", background: "#fff", fontWeight: 500, fontSize: 16, cursor: "pointer", maxWidth: "100%" }}>Cancel</button>
+          <button onClick={handleGetStarted} disabled={!isFormValid} style={{ padding: "10px 22px", borderRadius: 8, border: "none", background: isFormValid ? "#222" : "#888", color: "#fff", fontWeight: 500, fontSize: 16, cursor: isFormValid ? "pointer" : "not-allowed", maxWidth: "100%" }}>Get started</button>
         </div>
       </Modal>
     </div>

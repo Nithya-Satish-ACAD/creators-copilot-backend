@@ -6,22 +6,26 @@ import Dashboard from "./pages/Dashboard";
 import Studio from "./pages/Studio";
 import Courses from "./pages/Courses";
 import { FilesProvider } from "./context/FilesContext";
+import ErrorBoundary from "./components/ErrorBoundary";
+import NotFound from "./pages/NotFound";
 
 function App() {
   return (
-    <FilesProvider>
-      <Router>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/courses" element={<Courses />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/studio/:option" element={<Studio />} />
-          {/* Redirect root to login */}
-          <Route path="*" element={<Navigate to="/login" replace />} />
-        </Routes>
-      </Router>
-    </FilesProvider>
+    <ErrorBoundary>
+      <FilesProvider>
+        <Router>
+          <Routes>
+            <Route path="/" element={<Navigate to="/courses" />} />
+            <Route path="/courses" element={<Courses />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/studio/:option" element={<Studio />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Router>
+      </FilesProvider>
+    </ErrorBoundary>
   );
 }
 
