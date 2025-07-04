@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Modal from "../components/Modal";
 import { logout } from "../services/auth";
+import { FaTrash } from "react-icons/fa";
 
 function getCourses() {
   try {
@@ -54,6 +55,38 @@ export default function Courses() {
   const handleCardClick = (course) => {
     localStorage.setItem("currentCourseTitle", course.title);
     navigate("/dashboard");
+  };
+
+  const handleDeleteCourse = (idx, e) => {
+    e.stopPropagation(); // Prevent card click navigation
+    if (window.confirm("Are you sure you want to delete this course?")) {
+      const updatedCourses = courses.filter((_, i) => i !== idx);
+      saveCourses(updatedCourses);
+      setCourses(updatedCourses);
+    }
+  };
+
+  const trashBtnStyle = {
+    position: "absolute",
+    top: 12,
+    right: 12,
+    background: "rgba(255, 255, 255, 0.7)",
+    border: "none",
+    borderRadius: "50%",
+    width: 32,
+    height: 32,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    boxShadow: "0 1px 4px #0001",
+    transition: "background 0.18s, box-shadow 0.18s",
+    cursor: "pointer",
+    zIndex: 2,
+    padding: 0
+  };
+  const trashBtnHoverStyle = {
+    background: "#ffeaea",
+    boxShadow: "0 2px 8px #f00a"
   };
 
   return (
@@ -108,10 +141,20 @@ export default function Courses() {
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "center",
-                  alignItems: "center"
+                  alignItems: "center",
+                  position: "relative"
                 }}
               >
                 <div style={{ fontWeight: 700, fontSize: 19 }}>{course.title}</div>
+                <button
+                  onClick={e => handleDeleteCourse(idx, e)}
+                  style={{ ...trashBtnStyle }}
+                  title="Delete Course"
+                  onMouseOver={e => Object.assign(e.currentTarget.style, trashBtnHoverStyle)}
+                  onMouseOut={e => Object.assign(e.currentTarget.style, trashBtnStyle)}
+                >
+                  <FaTrash style={{ color: "#e53935", fontSize: 17 }} />
+                </button>
               </div>
             ))}
           </div>
