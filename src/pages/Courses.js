@@ -1,212 +1,139 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "../components/Header";
-import Modal from "../components/Modal";
+import { FaUserCircle } from "react-icons/fa";
 import { logout } from "../services/auth";
-import { FaTrash } from "react-icons/fa";
-
-function getCourses() {
-  try {
-    return JSON.parse(localStorage.getItem("courses")) || [];
-  } catch {
-    return [];
-  }
-}
-
-function saveCourses(courses) {
-  localStorage.setItem("courses", JSON.stringify(courses));
-}
+import Modal from "../components/Modal";
+import { FaRegStar } from "react-icons/fa";
 
 export default function Courses() {
+  const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [courseName, setCourseName] = useState("");
   const [courseDesc, setCourseDesc] = useState("");
-  const [courses, setCourses] = useState(getCourses());
-  const navigate = useNavigate();
+  const [courses, setCourses] = useState([]);
 
   useEffect(() => {
-    setCourses(getCourses());
-  }, []);
+    const stored = JSON.parse(localStorage.getItem("courses")) || [];
+    setCourses(stored);
+  }, [showModal]);
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   const handleCreate = () => setShowModal(true);
   const handleClose = () => setShowModal(false);
   const handleGetStarted = () => {
+    if (!courseName.trim() || !courseDesc.trim()) return;
+    const courses = JSON.parse(localStorage.getItem("courses")) || [];
     const newCourse = { title: courseName, desc: courseDesc };
     const updatedCourses = [...courses, newCourse];
-    saveCourses(updatedCourses);
-    setCourses(updatedCourses);
+    localStorage.setItem("courses", JSON.stringify(updatedCourses));
     localStorage.setItem("currentCourseTitle", courseName);
     setShowModal(false);
     setCourseName("");
     setCourseDesc("");
+    setCourses(updatedCourses);
     navigate("/dashboard");
-  };
-  const handleLogout = () => {
-    // backend integration
-    logout();
-    navigate("/login");
-  };
-  const handleGenerateAI = () => {
-    setCourseDesc("This course helps the students to have a comprehensive knowledge about " + (courseName || "the subject"));
-  };
-
-  const isFormValid = courseName.trim() !== "" && courseDesc.trim() !== "";
-
-  const handleCardClick = (course) => {
-    localStorage.setItem("currentCourseTitle", course.title);
-    navigate("/dashboard");
-  };
-
-  const handleDeleteCourse = (idx, e) => {
-    e.stopPropagation(); // Prevent card click navigation
-    if (window.confirm("Are you sure you want to delete this course?")) {
-      const updatedCourses = courses.filter((_, i) => i !== idx);
-      saveCourses(updatedCourses);
-      setCourses(updatedCourses);
-    }
-  };
-
-  const trashBtnStyle = {
-    position: "absolute",
-    top: 12,
-    right: 12,
-    background: "rgba(255, 255, 255, 0.7)",
-    border: "none",
-    borderRadius: "50%",
-    width: 32,
-    height: 32,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    boxShadow: "0 1px 4px #0001",
-    transition: "background 0.18s, box-shadow 0.18s",
-    cursor: "pointer",
-    zIndex: 2,
-    padding: 0
-  };
-  const trashBtnHoverStyle = {
-    background: "#ffeaea",
-    boxShadow: "0 2px 8px #f00a"
-  };
-
-  const createCourseModalStyle = {
-    background: "#fff",
-    borderRadius: 16,
-    boxShadow: "0 2px 16px #0002",
-    padding: "36px 32px 32px 32px",
-    minWidth: 400,
-    maxWidth: 700,
-    width: "100%",
-    maxHeight: "95vh",
-    overflowY: "auto",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    boxSizing: "border-box"
   };
 
   return (
     <div style={{ minHeight: "100vh", background: "#fff", display: "flex", flexDirection: "column" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <Header />
+      {/* Header Bar */}
+      <div style={{ height: 40, display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid #eee", padding: "0 16px" }}>
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <div style={{ background: "#2563eb", color: "#fff", borderRadius: 8, width: 28, height: 28, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 16, marginRight: 8 }}>
+            C
+          </div>
+          <span style={{ fontWeight: 500, fontSize: 15, color: "#222" }}>Creators Copilot</span>
+        </div>
         <button
           onClick={handleLogout}
-          style={{ marginRight: 32, padding: "8px 18px", borderRadius: 6, border: "1px solid #bbb", background: "#fff", fontWeight: 500, fontSize: 15, cursor: "pointer" }}
+          style={{ display: "flex", alignItems: "center", gap: 8, background: "none", border: "none", color: "#222", fontWeight: 500, fontSize: 15, cursor: "pointer", padding: 0 }}
         >
-          Logout
+          <FaUserCircle style={{ fontSize: 22, color: "#2563eb" }} /> Logout
         </button>
       </div>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", margin: "32px 32px 0 32px" }}>
-        <div style={{ fontWeight: 700, fontSize: 24 }}>Courses</div>
-        {courses.length > 0 && (
+      {/* Courses List or Centered Create Button */}
+      {courses.length === 0 ? (
+        <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
           <button
-            style={{ padding: "10px 22px", borderRadius: 6, border: "none", background: "#222", color: "#fff", fontWeight: 500, fontSize: 16, cursor: "pointer" }}
+            style={{ padding: "10px 22px", borderRadius: 6, border: "none", background: "#1680ea", color: "#fff", fontWeight: 500, fontSize: 15, cursor: "pointer" }}
             onClick={handleCreate}
           >
-            + Create Course
-          </button>
-        )}
-      </div>
-      <div className="main-layout" style={{ flex: 1, display: "flex", alignItems: courses.length === 0 ? "center" : "flex-start", justifyContent: courses.length === 0 ? "center" : "flex-start", width: "100%" }}>
-        {courses.length === 0 ? (
-          <div style={{ textAlign: "center", width: "100%" }}>
-            <div style={{ marginBottom: 16, fontSize: 17 }}>No courses created yet.</div>
-            <button
-              style={{ padding: "10px 22px", borderRadius: 6, border: "none", background: "#222", color: "#fff", fontWeight: 500, fontSize: 16, cursor: "pointer" }}
-              onClick={handleCreate}
-            >
-              Create Course
-            </button>
-          </div>
-        ) : (
-          <div style={{ display: "flex", gap: 32, flexWrap: "wrap", alignItems: "flex-start", margin: "32px 0 0 32px", width: "100%" }}>
-            {courses.map((course, idx) => (
-              <div
-                key={idx}
-                className="course-card"
-                onClick={() => handleCardClick(course)}
-                style={{
-                  width: 320,
-                  height: 120,
-                  background: "#fafbfc",
-                  borderRadius: 12,
-                  boxShadow: "0 1px 4px #0001",
-                  padding: "28px 24px",
-                  cursor: "pointer",
-                  transition: "box-shadow 0.2s, transform 0.2s",
-                  border: "1px solid #eee",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  position: "relative"
-                }}
-              >
-                <div style={{ fontWeight: 700, fontSize: 19 }}>{course.title}</div>
-                <button
-                  onClick={e => handleDeleteCourse(idx, e)}
-                  style={trashBtnStyle}
-                  title="Delete Course"
-                  onMouseOver={e => Object.assign(e.currentTarget.style, trashBtnHoverStyle)}
-                  onMouseOut={e => Object.assign(e.currentTarget.style, trashBtnStyle)}
-                >
-                  <FaTrash style={{ color: "#e53935", fontSize: 17 }} />
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-      <Modal open={showModal} onClose={handleClose} modalStyle={createCourseModalStyle} className="modal-custom">
-        <div style={{ fontWeight: 700, fontSize: 28, marginBottom: 18 }}>Create Course</div>
-        <div style={{ fontWeight: 600, fontSize: 16, marginBottom: 8 }}>Course Name</div>
-        <input
-          type="text"
-          placeholder="e.g Web Development with JS"
-          value={courseName}
-          onChange={e => setCourseName(e.target.value)}
-          style={{ width: "100%", maxWidth: "100%", boxSizing: "border-box", padding: "12px 14px", fontSize: 16, borderRadius: 8, border: "1px solid #ccc", marginBottom: 18 }}
-          required
-        />
-        <div style={{ fontWeight: 600, fontSize: 16, marginBottom: 8, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span>About the course</span>
-          <button
-            onClick={handleGenerateAI}
-            style={{ fontWeight: 500, fontSize: 15, color: "#222", background: "#f5f5f5", border: "1px solid #ccc", borderRadius: 8, padding: "6px 16px", display: "flex", alignItems: "center", gap: 6, cursor: "pointer" }}
-          >
-            <span style={{ fontSize: 20 }}>✨</span> Generate with AI
+            Create Course
           </button>
         </div>
-        <textarea
-          placeholder="e.g This course helps the students to have a comprehensive knowledge about web development"
-          value={courseDesc}
-          onChange={e => setCourseDesc(e.target.value)}
-          style={{ width: "100%", maxWidth: "100%", boxSizing: "border-box", minHeight: 90, padding: "12px 14px", fontSize: 15, borderRadius: 8, border: "1px solid #ccc", marginBottom: 28, resize: "vertical" }}
-          required
-        />
-        <div style={{ display: "flex", justifyContent: "flex-end", gap: 16, flexWrap: "wrap" }}>
-          <button onClick={handleClose} style={{ padding: "10px 22px", borderRadius: 8, border: "1px solid #bbb", background: "#fff", fontWeight: 500, fontSize: 16, cursor: "pointer", maxWidth: "100%" }}>Cancel</button>
-          <button onClick={handleGetStarted} disabled={!isFormValid} style={{ padding: "10px 22px", borderRadius: 8, border: "none", background: isFormValid ? "#222" : "#888", color: "#fff", fontWeight: 500, fontSize: 16, cursor: isFormValid ? "pointer" : "not-allowed", maxWidth: "100%" }}>Get started</button>
+      ) : (
+        <div style={{ flex: 1, display: 'flex', flexWrap: 'wrap', gap: 24, padding: '40px 5vw' }}>
+          {courses.map((course, idx) => (
+            <div
+              key={idx}
+              style={{
+                background: '#f5f7fa',
+                borderRadius: 12,
+                boxShadow: '0 1px 4px #0001',
+                padding: '16px 24px',
+                minWidth: 180,
+                minHeight: 96,
+                height: 96,
+                fontWeight: 600,
+                fontSize: 18,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                transition: 'box-shadow 0.15s',
+                border: '2px solid transparent',
+              }}
+              onClick={() => {
+                localStorage.setItem('currentCourseTitle', course.title);
+                navigate('/dashboard');
+              }}
+              onMouseOver={e => e.currentTarget.style.boxShadow = '0 4px 16px #2563eb22'}
+              onMouseOut={e => e.currentTarget.style.boxShadow = '0 1px 4px #0001'}
+            >
+              {course.title}
+            </div>
+          ))}
+        </div>
+      )}
+      <Modal open={showModal} onClose={handleClose} modalStyle={{ minWidth: 0, maxWidth: 600, width: '100%', borderRadius: 12 }}>
+        <div>
+          <div style={{ fontWeight: 700, fontSize: 24, marginBottom: 24 }}>Create Course</div>
+          <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 8 }}>Course Name</div>
+          <input
+            type="text"
+            placeholder="e.g. Introduction to Python"
+            value={courseName}
+            onChange={e => setCourseName(e.target.value)}
+            style={{ width: "100%", boxSizing: "border-box", padding: "10px 12px", fontSize: 15, borderRadius: 6, border: "1px solid #ccc", marginBottom: 22 }}
+            required
+          />
+          <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 8, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <span>About the course</span>
+            <button
+              type="button"
+              style={{ background: "none", border: "none", cursor: "pointer", color: "#2563eb", fontSize: 18, padding: 0 }}
+              title="AI Sparkle"
+            >
+              <FaRegStar style={{ fontSize: 18 }} />
+            </button>
+          </div>
+          <div style={{ position: "relative", marginBottom: 32 }}>
+            <textarea
+              placeholder="Type here or click the AI Sparkle button to provide details about the course audience (eg. Year 2 Digital Transformation), topics, projects, assessment methods etc."
+              value={courseDesc}
+              onChange={e => setCourseDesc(e.target.value)}
+              style={{ width: "100%", minHeight: 90, boxSizing: "border-box", padding: "10px 12px", fontSize: 15, borderRadius: 6, border: "1px solid #ccc", resize: "vertical" }}
+              required
+            />
+          </div>
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: 12 }}>
+            <button onClick={handleClose} style={{ padding: "8px 18px", borderRadius: 6, border: "1px solid #bbb", background: "#fff", fontWeight: 500, fontSize: 15, cursor: "pointer" }}>Close</button>
+            <button onClick={handleGetStarted} disabled={!courseName.trim() || !courseDesc.trim()} style={{ padding: "8px 18px", borderRadius: 6, border: "none", background: (!courseName.trim() || !courseDesc.trim()) ? "#bbb" : "#1680ea", color: "#fff", fontWeight: 500, fontSize: 15, cursor: (!courseName.trim() || !courseDesc.trim()) ? "not-allowed" : "pointer" }}>Get Started</button>
+          </div>
         </div>
       </Modal>
     </div>

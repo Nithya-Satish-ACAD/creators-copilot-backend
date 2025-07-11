@@ -6,10 +6,12 @@ export default function SectionCard({ title, description, buttonLabel, style, on
       <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
         <h2 style={{ margin: 0, fontSize: 24, fontWeight: 600, flex: 1 }}>{title}</h2>
       </div>
-      <div style={{ display: "flex", alignItems: "center", marginTop: 12 }}>
-        {description && <span style={{ fontSize: 16, color: "#222", flex: 1 }}>{description}</span>}
-        {buttonLabel && <button style={btnStyle} onClick={onButtonClick}>{buttonLabel}</button>}
-      </div>
+      {description && <span style={{ fontSize: 16, color: "#222", marginTop: 12, marginBottom: 24 }}>{description}</span>}
+      {buttonLabel && (
+        <div style={{ display: "flex", justifyContent: "center", marginTop: description ? 0 : 24 }}>
+          <button style={btnStyle} onClick={onButtonClick}>{buttonLabel}</button>
+        </div>
+      )}
     </div>
   );
 }
@@ -22,7 +24,7 @@ const btnStyle = {
   fontWeight: 500,
   fontSize: 15,
   cursor: "pointer",
-  marginLeft: 12,
+  marginLeft: 0,
   boxShadow: "0 1px 2px #0001",
   transition: "background 0.2s",
 }; 

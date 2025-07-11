@@ -1,10 +1,9 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import SectionCard from "../components/SectionCard";
 import Sidebar from "../components/Sidebar";
 import Modal from "../components/Modal";
-import AddReferencesModal from "../components/AddReferencesModal";
 import SettingsModal from "../components/SettingsModal";
 import { useFilesContext } from "../context/FilesContext";
 
@@ -12,50 +11,105 @@ function TopRow({ onAddContentClick, onSettingsClick }) {
   const courseTitle = localStorage.getItem("currentCourseTitle") || "Course Title";
   const navigate = useNavigate();
   return (
-    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", maxWidth: 1200, margin: "1rem auto 0.5rem auto", width: "100%" }}>
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", maxWidth: 1200, margin: "1rem auto 0.5rem auto", width: "100%" }}>
       <div>
-        <div style={{ color: "#888", fontSize: 15, marginBottom: 2 }}>
-          <span
-            style={{
-              color: "#444",
-              cursor: "pointer",
-              borderBottom: "1px dotted #888",
-              transition: "border-bottom 0.2s",
-              textDecoration: "none"
-            }}
-            onMouseOver={e => (e.target.style.borderBottom = "1px solid #222")}
-            onMouseOut={e => (e.target.style.borderBottom = "1px dotted #888")}
-            onClick={() => navigate("/courses")}
-          >
-            Courses
-          </span>
-          {" > "}
-          <span style={{ color: "#222" }}>{courseTitle}</span>
-        </div>
-        <div style={{ fontWeight: 700, fontSize: 26, marginTop: 0 }}>{courseTitle}</div>
+        <button
+          style={{
+            background: "#fff",
+            border: "1px solid #ddd",
+            borderRadius: 8,
+            padding: "7px 18px",
+            fontWeight: 500,
+            fontSize: 15,
+            color: "#222",
+            cursor: "pointer",
+            marginBottom: 18,
+            boxShadow: "0 1px 2px #0001"
+          }}
+          onClick={() => navigate("/courses")}
+        >
+          Back to Courses
+        </button>
+        <div style={{ fontWeight: 700, fontSize: 32, marginTop: 0 }}>{courseTitle}</div>
       </div>
-      <div style={{ display: "flex", gap: 10 }}>
-        <button style={btnStyle} onClick={onSettingsClick}>Settings</button>
-        <button style={btnStyle}>Share</button>
-        <button style={{ ...btnStyle, background: "#222", color: "#fff", border: "none" }}>Export to LMS</button>
+      <div style={{ display: "flex", alignItems: "center", gap: 14, marginTop: 8, justifyContent: "flex-end" }}>
+        {/* Toggle button group */}
+        <div style={{ display: "flex", alignItems: "center", gap: 0, background: "#f5f8ff", borderRadius: 8, border: "1px solid #e0e7ef", overflow: "hidden", height: 38, marginRight: 10 }}>
+          <button
+            style={{
+              background: "#2563eb",
+              color: "#fff",
+              border: "none",
+              padding: "0 14px",
+              fontWeight: 600,
+              fontSize: 18,
+              height: 38,
+              cursor: "pointer",
+              outline: "none",
+              display: "flex",
+              alignItems: "center",
+              borderRadius: 0
+            }}
+          >
+            <span style={{ fontSize: 18, verticalAlign: "middle" }}>▦</span>
+          </button>
+          <button
+            style={{
+              background: "#fff",
+              color: "#222",
+              border: "none",
+              padding: "0 14px",
+              fontWeight: 600,
+              fontSize: 18,
+              height: 38,
+              cursor: "pointer",
+              outline: "none",
+              borderLeft: "1px solid #e0e7ef",
+              display: "flex",
+              alignItems: "center",
+              borderRadius: 0
+            }}
+          >
+            <span style={{ fontSize: 18, verticalAlign: "middle" }}>≡</span>
+          </button>
+        </div>
+        <button
+          style={{
+            height: 38,
+            padding: "0 22px",
+            borderRadius: 8,
+            border: "1px solid #ddd",
+            background: "#fff",
+            fontWeight: 500,
+            fontSize: 16,
+            color: "#222",
+            cursor: "pointer",
+            marginRight: 2
+          }}
+          onClick={onSettingsClick}
+        >
+          Settings
+        </button>
+        <button
+          style={{
+            height: 38,
+            padding: "0 22px",
+            borderRadius: 8,
+            border: "none",
+            background: "#2563eb",
+            fontWeight: 500,
+            fontSize: 16,
+            color: "#fff",
+            cursor: "pointer"
+          }}
+        >
+          Export to LMS
+        </button>
       </div>
     </div>
   );
 }
 
-const btnStyle = {
-  padding: "7px 14px",
-  borderRadius: 5,
-  border: "1px solid #bbb",
-  background: "#fff",
-  cursor: "pointer",
-  fontSize: 14,
-  fontWeight: 500,
-};
-
-const GAP = 14;
-const HEADER_HEIGHT = 56;
-const TOPROW_HEIGHT = 80;
 
 const curriculumOptions = [
   {
@@ -90,89 +144,132 @@ const curriculumOptions = [
   },
 ];
 
-const refOptions = [
-  {
-    label: "Upload references",
-    icon: "📤",
-    desc: "",
-  },
-  {
-    label: "Select from an existing course",
-    icon: "📚",
-    desc: "",
-  },
-  {
-    label: "Discover references",
-    icon: "🔍",
-    desc: "",
-  },
-];
-
 export default function Dashboard() {
   const [showCurriculumModal, setShowCurriculumModal] = useState(false);
   const [selectedOption, setSelectedOption] = useState(0);
-  const [showAddContentModal, setShowAddContentModal] = useState(false);
-  const [selectedRefOption, setSelectedRefOption] = useState(0);
-  const [addRefStep, setAddRefStep] = useState(0);
-  const [sessionUploadedCount, setSessionUploadedCount] = useState(0);
-  const [sessionUploadedFiles, setSessionUploadedFiles] = useState([]); // [{name, type, checked}]
+  // Remove Add Resources modal, go directly to upload modal
+  // const [showAddResourceModal, setShowAddResourceModal] = useState(false);
+  // const [selectedResourceOption, setSelectedResourceOption] = useState(0); // 0: Upload, 1: Discover
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const navigate = useNavigate();
   const { addFiles } = useFilesContext();
-  
 
   const handleCurriculumCreate = () => setShowCurriculumModal(true);
   const handleModalClose = () => setShowCurriculumModal(false);
   const handleModalCreate = () => {
     const url = curriculumOptions[selectedOption].url;
     setShowCurriculumModal(false);
-    // backend integration: create curriculum component in backend
     navigate(`/studio/${url}`);
   };
 
-  const handleAddContentClick = () => {
-    setAddRefStep(0);
-    setShowAddContentModal(true);
+  // Add Resource modal with Upload/Discover toggle
+  const [showAddResourceModal, setShowAddResourceModal] = useState(false);
+  const [resourceTab, setResourceTab] = useState(null); // null, 'upload', or 'discover'
+  const [uploadingFiles, setUploadingFiles] = useState([]); // [{name, progress, done, file}]
+
+  const handleAddResourceClick = () => {
+    setShowAddResourceModal(true);
+    setResourceTab(null);
+    setUploadingFiles([]);
   };
-  const handleAddContentModalClose = () => {
-    setShowAddContentModal(false);
+  const handleResourceBack = () => {
+    setResourceTab(null);
+    setUploadingFiles([]);
   };
-  const handleAddContentModalAdd = () => {
-    setShowAddContentModal(false);
-    // backend integration: add uploaded/selected references to backend knowledge base
-    // You can handle the selected option here
+  const handleResourceModalClose = () => {
+    setShowAddResourceModal(false);
+    setUploadingFiles([]);
+  };
+  const handleFilesUpload = files => {
+    const filesArr = Array.from(files).map(file => ({ name: file.name, progress: 0, done: false, file }));
+    setUploadingFiles(prev => [...prev, ...filesArr]);
+    filesArr.forEach((file, idx) => simulateUpload(file, uploadingFiles.length + idx));
+  };
+  const simulateUpload = (file, idx) => {
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += Math.random() * 25 + 10;
+      setUploadingFiles(prev => prev.map((u, i) => i === idx ? { ...u, progress: Math.min(progress, 100), done: progress >= 100 } : u));
+      if (progress >= 100) clearInterval(interval);
+    }, 300);
+  };
+  const handleDrop = e => {
+    e.preventDefault();
+    handleFilesUpload(e.dataTransfer.files);
+  };
+  const handleBrowse = e => {
+    handleFilesUpload(e.target.files);
+    e.target.value = null;
+  };
+  const handleRemoveFile = idx => {
+    setUploadingFiles(prev => prev.filter((_, i) => i !== idx));
+  };
+  const handleResourceAdd = () => {
+    if (resourceTab === 'upload') {
+      const newFiles = uploadingFiles.filter(f => f.done).map(f => ({ name: f.name, type: f.file?.type || '', checked: true }));
+      addFiles(newFiles);
+    }
+    setShowAddResourceModal(false);
+    setUploadingFiles([]);
   };
 
   return (
-    <div style={{ minHeight: "100vh", background: "#fafbfc", display: "flex", flexDirection: "column" }}>
+    <div style={{ minHeight: "100vh", height: "100vh", background: "#fafbfc", display: "flex", flexDirection: "column" }}>
       <Header />
       <TopRow onSettingsClick={() => setShowSettingsModal(true)} />
-      <div className="main-layout" style={{ display: "flex", gap: 24, alignItems: "flex-start", flex: 1, height: `calc(100vh - ${HEADER_HEIGHT + TOPROW_HEIGHT}px)`, padding: "0 5vw" }}>
-        {/* Main Content: 3 cards stacked vertically, equal height */}
-        <div style={{ flex: 2, display: "flex", flexDirection: "column", gap: GAP, height: "100%" }}>
+      <div className="main-layout" style={{ display: "flex", gap: 24, alignItems: "flex-start", flex: 1, minHeight: 0, height: "100%", padding: "0 5vw" }}>
+        {/* Main Content: 4 cards inside a scrollable card container */}
+        <div style={{ flex: 2, display: "flex", flexDirection: "column", minHeight: 0, height: "100%" }}>
+          <div style={{ background: "rgb(250, 251, 252)", borderRadius: 16, boxShadow: "none", padding: 0, height: "100%", minHeight: 0, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+            <div style={{ flex: 1, minHeight: 0, overflowY: "auto", display: "flex", flexDirection: "column", gap: 28, padding: "32px 24px 32px 24px" }}>
           <SectionCard
             title="Curriculum"
-            description="Start creating content"
             buttonLabel="Create"
-            style={{ flex: 1, minHeight: 0, padding: "20px 20px" }}
+                style={{
+                  boxShadow: "0 4px 24px #0002",
+                  borderRadius: 18,
+                  padding: "28px 32px",
+                  marginBottom: 0,
+                  background: "#fff"
+                }}
             onButtonClick={handleCurriculumCreate}
           />
           <SectionCard
-            title="Assessment"
-            description="Begin on Assessments"
+                title="Assessments"
             buttonLabel="Create"
-            style={{ flex: 1, minHeight: 0, padding: "20px 20px" }}
+                style={{
+                  boxShadow: "0 4px 24px #0002",
+                  borderRadius: 18,
+                  padding: "28px 32px",
+                  marginBottom: 0,
+                  background: "#fff"
+                }}
           />
           <SectionCard
-            title="AI Evaluation"
-            description="Launch automated response evaluation"
+                title="Evaluation"
             buttonLabel="Start Evaluation"
-            style={{ flex: 1, minHeight: 0, padding: "20px 20px" }}
-          />
+                style={{
+                  boxShadow: "0 4px 24px #0002",
+                  borderRadius: 18,
+                  padding: "28px 32px",
+                  marginBottom: 0,
+                  background: "#fff"
+                }}
+              />
+              <div style={{ background: "#fff", borderRadius: 18, boxShadow: "0 4px 24px #0002", padding: "28px 32px", minHeight: 140, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+                  <h2 style={{ margin: 0, fontSize: 24, fontWeight: 600, flex: 1 }}>Sprint Plan <span style={{ fontSize: 13, fontWeight: 400, color: '#444', marginLeft: 8 }}>(Based on the Academics term...)</span></h2>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", marginTop: 12 }}>
+                  <button style={{ padding: "8px 22px", borderRadius: 6, border: "1px solid #bbb", background: "#fff", fontWeight: 500, fontSize: 15, cursor: "pointer", marginLeft: 12, boxShadow: "0 1px 2px #0001", transition: "background 0.2s" }}>Create Documentation</button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         {/* Sidebar */}
         <div className="sidebar" style={{ flex: 1, minWidth: 280, height: "100%" }}>
-          <Sidebar onAddContentClick={handleAddContentClick} />
+          <Sidebar onAddContentClick={handleAddResourceClick} />
         </div>
       </div>
       <Modal open={showCurriculumModal} onClose={handleModalClose}>
@@ -212,165 +309,135 @@ export default function Dashboard() {
           <button onClick={handleModalCreate} style={{ padding: "8px 18px", borderRadius: 6, border: "none", background: "#222", color: "#fff", fontWeight: 500, fontSize: 15, cursor: "pointer" }}>Create</button>
         </div>
       </Modal>
-      <AddReferencesModal open={showAddContentModal} onClose={handleAddContentModalClose}>
-        {addRefStep === 0 && (
-          <>
-            <div style={{ fontWeight: 700, fontSize: 20, marginBottom: 6 }}>Add References</div>
-            <div style={{ color: "#444", fontSize: 15, marginBottom: 18 }}>To start building your course, select any of the following</div>
-            <div style={{ display: "flex", gap: 18, marginBottom: 24 }}>
-              {refOptions.map((opt, i) => (
-                <div
-                  key={opt.label}
-                  onClick={() => {
-                    setSelectedRefOption(i);
-                    if (i === 0) setAddRefStep(1);
-                  }}
-                  style={{
-                    position: 'relative',
-                    flex: 1,
-                    minWidth: 120,
-                    background: selectedRefOption === i ? "#f0f7ff" : "#fafbfc",
-                    border: selectedRefOption === i ? "2px solid #1976d2" : "1px solid #ddd",
-                    borderRadius: 10,
-                    padding: "24px 18px",
-                    cursor: "pointer",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    gap: 10,
-                    boxShadow: selectedRefOption === i ? "0 2px 8px #1976d222" : "none"
-                  }}
-                >
-                  <div style={{ fontSize: 28 }}>{opt.icon}</div>
-                  <div style={{ fontWeight: 600, fontSize: 16, textAlign: "center" }}>{opt.label}</div>
-                  {i === 0 && sessionUploadedCount > 0 && (
-                    <span style={{ marginTop: 6, background: '#eafaf1', color: '#219653', borderRadius: 6, fontSize: 13, fontWeight: 600, padding: '2px 10px', display: 'inline-block' }}>{sessionUploadedCount} files uploaded</span>
-                  )}
-                </div>
-              ))}
-            </div>
-            <div style={{ display: "flex", justifyContent: "flex-end", gap: 12 }}>
-              <button onClick={handleAddContentModalClose} style={{ padding: "8px 18px", borderRadius: 6, border: "1px solid #bbb", background: "#fff", fontWeight: 500, fontSize: 15, cursor: "pointer" }}>Cancel</button>
+      <Modal open={showAddResourceModal} onClose={handleResourceModalClose} modalStyle={{ minWidth: 600, maxWidth: 700, borderRadius: 16, padding: 0 }}>
+        <div style={{ padding: "32px 36px 24px 36px", background: "#fff", borderRadius: 16, minWidth: 500 }}>
+          <div style={{ fontWeight: 700, fontSize: 24, marginBottom: 6, color: "#1a2533" }}>Add Resources</div>
+          <div style={{ color: "#6b7280", fontSize: 15, marginBottom: 28, fontWeight: 500 }}>
+            Add resources from the web or course documents you’ve already created — this helps AI give relevant results.
+          </div>
+          {resourceTab === null && (
+            <div style={{ display: "flex", gap: 24, marginBottom: 32 }}>
               <button
-                onClick={() => {
-                  if (selectedRefOption === 0 && sessionUploadedFiles.length > 0) {
-                    addFiles(sessionUploadedFiles);
-                    setSessionUploadedFiles([]);
-                    setSessionUploadedCount(0);
-                  }
-                  handleAddContentModalAdd();
+                onClick={() => setResourceTab('upload')}
+                style={{
+                  flex: 1,
+                  background: '#f5f8ff',
+                  border: '2px solid #2563eb',
+                  borderRadius: 12,
+                  padding: '36px 0',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  cursor: 'pointer',
+                  fontWeight: 600,
+                  fontSize: 18,
+                  color: '#2563eb',
+                  outline: 'none',
+                  boxShadow: '0 2px 8px #2563eb22',
+                  transition: 'border 0.2s, background 0.2s',
                 }}
-                style={{ padding: "8px 18px", borderRadius: 6, border: "none", background: "#222", color: "#fff", fontWeight: 500, fontSize: 15, cursor: "pointer" }}
               >
-                Add
+                <span style={{ fontSize: 38, marginBottom: 16 }}>&#8682;</span>
+                Upload
+              </button>
+              <button
+                onClick={() => setResourceTab('discover')}
+                style={{
+                  flex: 1,
+                  background: '#fff',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: 12,
+                  padding: '36px 0',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  cursor: 'pointer',
+                  fontWeight: 600,
+                  fontSize: 18,
+                  color: '#222',
+                  outline: 'none',
+                  transition: 'border 0.2s, background 0.2s',
+                }}
+              >
+                <span style={{ fontSize: 38, marginBottom: 16 }}>&#128269;</span>
+                Discover
               </button>
             </div>
-          </>
-        )}
-        {addRefStep === 1 && (
-          <UploadReferencesStep
-            onBack={() => setAddRefStep(0)}
-            onCancel={handleAddContentModalClose}
-            setSessionUploadedFiles={setSessionUploadedFiles}
-            setSessionUploadedCount={setSessionUploadedCount}
-          />
-        )}
-      </AddReferencesModal>
-      <SettingsModal open={showSettingsModal} onClose={() => setShowSettingsModal(false)} onSave={() => setShowSettingsModal(false)} />
-    </div>
-  );
-}
-
-function UploadReferencesStep({ onBack, onCancel, setSessionUploadedFiles, setSessionUploadedCount }) {
-  const [uploading, setUploading] = useState([]); // [{file, progress, done}]
-  const [, setUploaded] = useState([]);
-  const fileInputRef = useRef();
-
-  const handleFiles = files => {
-    const filesArr = Array.from(files);
-    const newUploads = filesArr.map(file => ({ file, progress: 0, done: false }));
-    setUploading(prev => [...prev, ...newUploads]);
-    filesArr.forEach((file, idx) => simulateUpload(file, idx + uploading.length));
-  };
-
-  const simulateUpload = (file, idx) => {
-    let progress = 0;
-    const interval = setInterval(() => {
-      progress += Math.random() * 25 + 10;
-      setUploading(prev => prev.map((u, i) => i === idx ? { ...u, progress: Math.min(progress, 100), done: progress >= 100 } : u));
-      if (progress >= 100) {
-        clearInterval(interval);
-        setUploaded(prev => {
-          const updated = [...prev, { file }];
-          // Only update session state, do not add to global references
-          setSessionUploadedFiles(updated.map(u => ({ name: u.file.name, type: u.file.type, checked: true })));
-          setSessionUploadedCount(updated.length);
-          return updated;
-        });
-      }
-    }, 300);
-  };
-
-  const handleDrop = e => {
-    e.preventDefault();
-    handleFiles(e.dataTransfer.files);
-  };
-  const handleBrowse = e => {
-    handleFiles(e.target.files);
-    e.target.value = null;
-  };
-  const handleDelete = idx => {
-    setUploaded(prev => prev.filter((_, i) => i !== idx));
-  };
-
-  const handleCancel = () => {
-    setUploaded([]);
-    setSessionUploadedFiles([]);
-    setSessionUploadedCount(0);
-    onCancel();
-  };
-  const handleBack = () => {
-    setUploaded([]);
-    onBack();
-  };
-
-  return (
-    <div>
-      <div style={{ fontWeight: 700, fontSize: 20, marginBottom: 6 }}>Upload References</div>
-      <div style={{ color: "#444", fontSize: 15, marginBottom: 12 }}>Accepted formats: PDF, DOCX, PPTX, TXT, CSV, Images</div>
-      <div
-        onDrop={handleDrop}
-        onDragOver={e => e.preventDefault()}
-        style={{ border: "2px dashed #1976d2", borderRadius: 10, padding: 32, textAlign: "center", marginBottom: 18, background: "#f5f7fa", cursor: "pointer" }}
-        onClick={() => fileInputRef.current.click()}
-      >
-        <div style={{ fontSize: 32, marginBottom: 8 }}>📂</div>
-        <div style={{ fontWeight: 500, fontSize: 16 }}>Drag & drop files here or <span style={{ color: "#1976d2", textDecoration: "underline" }}>Browse</span></div>
-        <input
-          type="file"
-          multiple
-          ref={fileInputRef}
-          style={{ display: "none" }}
-          onChange={handleBrowse}
-          accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.csv,image/*"
-        />
-      </div>
-      <div style={{ marginBottom: 12 }}>
-        {uploading.map((u, i) => (
-          <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
-            <span>{u.file.name}</span>
-            <div style={{ flex: 1, height: 8, background: "#eee", borderRadius: 4, overflow: "hidden" }}>
-              <div style={{ width: `${u.progress}%`, height: 8, background: u.done ? "#4caf50" : "#1976d2" }} />
-            </div>
-            <span style={{ fontSize: 13 }}>{Math.round(u.progress)}%</span>
-            <span style={{ cursor: "pointer", color: "#d32f2f" }} onClick={() => handleDelete(i)}>🗑️</span>
+          )}
+          {resourceTab === 'upload' && (
+            <>
+              <button onClick={handleResourceBack} style={{ background: 'none', border: 'none', color: '#2563eb', fontWeight: 500, fontSize: 16, cursor: 'pointer', padding: 0, marginBottom: 12, display: 'flex', alignItems: 'center' }}>
+                <span style={{ fontSize: 20, marginRight: 6 }}>&larr;</span> Back
+              </button>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+                <span style={{ fontSize: 22, color: "#2563eb" }}>⭳</span>
+                <span style={{ fontWeight: 700, fontSize: 22, color: "#1a2533" }}>Upload</span>
+              </div>
+              <div
+                onDrop={handleDrop}
+                onDragOver={e => e.preventDefault()}
+                style={{ border: "2px dashed #d1d5db", borderRadius: 12, padding: 32, textAlign: "center", marginBottom: 24, background: "#fafbfc", cursor: "pointer", position: "relative" }}
+                onClick={() => document.getElementById('upload-input').click()}
+              >
+                <span style={{ fontSize: 36, color: "#2563eb", display: "block", marginBottom: 10 }}>⭳</span>
+                <div style={{ fontSize: 16, color: "#222", marginBottom: 6 }}>
+                  Drag and drop or <span style={{ color: "#2563eb", textDecoration: "underline", cursor: "pointer" }}>browse files</span> to upload
+                </div>
+                <div style={{ color: "#6b7280", fontSize: 15, marginBottom: 0 }}>
+                  Accepted formats: <span style={{ color: "#2563eb", textDecoration: "underline", margin: "0 2px" }}>.pdf</span>
+                  <span style={{ color: "#2563eb", textDecoration: "underline", margin: "0 2px" }}>.docx</span>
+                  <span style={{ color: "#2563eb", textDecoration: "underline", margin: "0 2px" }}>.jpg</span>
+                  <span style={{ color: "#2563eb", textDecoration: "underline", margin: "0 2px" }}>.png</span>
+                  <span style={{ color: "#2563eb", textDecoration: "underline", margin: "0 2px" }}>.xlsx</span>
+                  <span style={{ color: "#2563eb", textDecoration: "underline", margin: "0 2px" }}>.pptx</span>
+                </div>
+                <input
+                  id="upload-input"
+                  type="file"
+                  multiple
+                  style={{ display: "none" }}
+                  onChange={handleBrowse}
+                  accept=".pdf,.docx,.jpg,.png,.xlsx,.pptx"
+                />
+              </div>
+              {uploadingFiles.length > 0 && (
+                <div style={{ marginBottom: 24 }}>
+                  <div style={{ fontWeight: 600, fontSize: 16, marginBottom: 10 }}>Uploading files</div>
+                  {uploadingFiles.map((file, idx) => (
+                    <div key={file.name + idx} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10, background: file.done ? "#f0fdf4" : "#fff", borderRadius: 6, padding: "8px 12px", border: file.done ? "1px solid #34d399" : "1px solid #e5e7eb" }}>
+                      <span style={{ flex: 1, fontSize: 15 }}>{file.name}</span>
+                      <div style={{ flex: 2, height: 6, background: "#e5e7eb", borderRadius: 3, overflow: "hidden", marginRight: 8 }}>
+                        <div style={{ width: `${file.progress}%`, height: 6, background: file.done ? "#34d399" : "#2563eb" }} />
+                      </div>
+                      {file.done ? (
+                        <span style={{ color: "#34d399", fontSize: 18 }}>✔</span>
+                      ) : (
+                        <span style={{ color: "#2563eb", fontSize: 18 }}>&#8635;</span>
+                      )}
+                      <button onClick={() => handleRemoveFile(idx)} style={{ background: "none", border: "none", color: "#d32f2f", fontSize: 18, cursor: "pointer" }} title="Remove">&#128465;</button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+          {resourceTab === 'discover' && (
+            <>
+              <button onClick={handleResourceBack} style={{ background: 'none', border: 'none', color: '#2563eb', fontWeight: 500, fontSize: 16, cursor: 'pointer', padding: 0, marginBottom: 12, display: 'flex', alignItems: 'center' }}>
+                <span style={{ fontSize: 20, marginRight: 6 }}>&larr;</span> Back
+              </button>
+              <div style={{ minHeight: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#888', fontSize: 18, fontWeight: 500 }}>
+                Discover resources (coming soon)
+              </div>
+            </>
+          )}
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: 12 }}>
+            <button onClick={handleResourceModalClose} style={{ padding: "10px 28px", borderRadius: 8, border: "1px solid #bbb", background: "#fff", fontWeight: 500, fontSize: 16, cursor: "pointer" }}>Cancel</button>
+            <button onClick={handleResourceAdd} style={{ padding: "10px 28px", borderRadius: 8, border: "none", background: "#2563eb", color: "#fff", fontWeight: 600, fontSize: 16, cursor: "pointer" }}>Add</button>
           </div>
-        ))}
-      </div>
-      <div style={{ display: "flex", justifyContent: "flex-end", gap: 12 }}>
-        <button onClick={handleCancel} style={{ padding: "8px 18px", borderRadius: 6, border: "1px solid #bbb", background: "#fff", fontWeight: 500, fontSize: 15, cursor: "pointer" }}>Cancel</button>
-        <button onClick={handleBack} style={{ padding: "8px 18px", borderRadius: 6, border: "1px solid #1976d2", background: "#f0f7ff", color: "#1976d2", fontWeight: 500, fontSize: 15, cursor: "pointer" }}>Back to Add References</button>
-      </div>
+        </div>
+      </Modal>
+      <SettingsModal open={showSettingsModal} onClose={() => setShowSettingsModal(false)} onSave={() => setShowSettingsModal(false)} />
     </div>
   );
 }

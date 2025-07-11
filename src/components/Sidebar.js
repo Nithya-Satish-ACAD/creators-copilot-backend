@@ -1,15 +1,16 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { useFilesContext } from "../context/FilesContext";
 
 export default function Sidebar({ onAddContentClick }) {
   const { files, addFiles } = useFilesContext();
   const fileInputRef = useRef();
+  const [menuIndex, setMenuIndex] = useState(null);
 
   const handleFileChange = (e) => {
     const newFiles = Array.from(e.target.files).map(file => ({
       name: file.name,
       type: file.type,
-      checked: true
+      checked: false
     }));
     addFiles(newFiles);
     e.target.value = null;
@@ -23,11 +24,35 @@ export default function Sidebar({ onAddContentClick }) {
     }
   };
 
+  const handleMenuClick = (idx) => {
+    setMenuIndex(idx === menuIndex ? null : idx);
+  };
+
+  const handleMenuClose = () => {
+    setMenuIndex(null);
+  };
+
+  // Adjust this value if your header/top row height changes
+  const sidebarBoxHeight = '60vh';
+
   return (
     <div>
-      <div style={{ background: "#fff", borderRadius: 12, boxShadow: "0 1px 4px #0001", padding: 20 }}>
-        <div style={{ fontWeight: 600, fontSize: 18, marginBottom: 6 }}>Knowledge base</div>
-        <div style={{ color: "#888", fontSize: 13, marginBottom: 10 }}>Guides AI for content generation.</div>
+      <div style={{
+        background: "#fff",
+        borderRadius: 16,
+        border: "1px solid #e5e7eb",
+        boxShadow: "none",
+        padding: 24,
+        height: sidebarBoxHeight,
+        maxHeight: sidebarBoxHeight,
+        display: "flex",
+        flexDirection: "column",
+        gap: 0
+      }}>
+        <div style={{ fontWeight: 700, fontSize: 22, marginBottom: 2, color: "#1a2533" }}>Knowledge Base</div>
+        <div style={{ color: "#6b7280", fontSize: 14, marginBottom: 18, fontWeight: 500 }}>
+        Add resources from the web or course documents you’ve already created — this helps AI give relevant results.
+        </div>
         <input
           type="file"
           ref={fileInputRef}
@@ -37,28 +62,37 @@ export default function Sidebar({ onAddContentClick }) {
         />
         <button
           style={{
-            padding: "10px 0",
-            borderRadius: 6,
+            padding: "12px 0",
+            borderRadius: 8,
             border: "1px solid #bbb",
             background: "#fff",
             cursor: "pointer",
-            fontSize: 15,
-            fontWeight: 500,
-            marginBottom: 12,
+            fontSize: 16,
+            fontWeight: 600,
+            marginBottom: 18,
             width: "100%"
           }}
           onClick={handleAddContentClick}
         >
-          Add Content
+          Add Resource
         </button>
-        <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-          {files.map((file, i) => (
-            <li key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "7px 0", borderBottom: i < files.length - 1 ? "1px solid #f0f0f0" : "none" }}>
-              <span style={{ fontSize: 15 }}>{getFileIcon(file)} {file.name}</span>
-              <span style={{ cursor: "pointer", fontSize: 18 }}>⋮</span>
-            </li>
-          ))}
-        </ul>
+        <div style={{ flex: 1, minHeight: 0, overflowY: "auto" }}>
+          <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+            {files.map((file, i) => (
+              <li key={i} style={{ position: 'relative', display: "flex", alignItems: "center", justifyContent: "space-between", padding: "7px 0", borderBottom: i < files.length - 1 ? "1px solid #f0f0f0" : "none" }}>
+                <span style={{ fontSize: 15 }}>{getFileIcon(file)} {file.name}</span>
+                <span style={{ cursor: "pointer", fontSize: 18 }} onClick={e => { e.stopPropagation(); handleMenuClick(i); }}>⋮</span>
+                {menuIndex === i && (
+                  <div style={{ position: 'absolute', right: 0, top: 28, background: '#fff', border: '1px solid #ddd', borderRadius: 8, boxShadow: '0 2px 8px #0002', zIndex: 10, minWidth: 120 }}>
+                    <div style={{ padding: '10px 16px', cursor: 'pointer', borderBottom: '1px solid #eee' }} onClick={() => { alert('View: ' + file.name); handleMenuClose(); }}>View</div>
+                    <div style={{ padding: '10px 16px', cursor: 'pointer' }} onClick={() => { alert('Download: ' + file.name); handleMenuClose(); }}>Download</div>
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
+          {menuIndex !== null && <div onClick={handleMenuClose} style={{ position: 'fixed', left: 0, top: 0, width: '100vw', height: '100vh', zIndex: 5 }} />}
+        </div>
       </div>
     </div>
   );

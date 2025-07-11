@@ -39,7 +39,7 @@ export default function Studio() {
     const newFiles = Array.from(e.target.files).map(file => ({
       name: file.name,
       type: file.type,
-      checked: true
+      checked: false
     }));
     addFiles(newFiles);
     e.target.value = null;
@@ -86,9 +86,7 @@ export default function Studio() {
           <span style={{ fontSize: 22 }}>✨</span> AI Studio
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-          <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 14, background: "#fff", borderRadius: 6, padding: "6px 12px" }}>
-            <input type="checkbox" style={{ accentColor: "#222" }} /> Use reference material only
-          </label>
+          
           <button style={btnStyle}>Settings</button>
           <button style={btnStyle} onClick={() => navigate(-1)}>Close</button>
           <button style={{ ...btnStyle, background: "#222", color: "#fff", border: "none" }}>Save</button>
@@ -261,7 +259,7 @@ function UploadReferencesStep({ onBack, onCancel, setSessionUploadedFiles, setSe
         setUploaded(prev => {
           const updated = [...prev, { file }];
           // Only update session state, do not add to global references
-          setSessionUploadedFiles(updated.map(u => ({ name: u.file.name, type: u.file.type, checked: true })));
+          setSessionUploadedFiles(updated.map(u => ({ name: u.file.name, type: u.file.type, checked: false })));
           setSessionUploadedCount(updated.length);
           return updated;
         });
