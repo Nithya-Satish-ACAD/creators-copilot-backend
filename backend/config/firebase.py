@@ -18,22 +18,41 @@ firebase_config = {
     "databaseURL": os.getenv("databaseURL")
 }
 
-# Try to get credentials path from environment variable, fallback to default location
-credentials_path = os.getenv("FIREBASE_CREDENTIALS_PATH")
-if not credentials_path:
-    # Fallback to default location relative to this file
-    credentials_path = os.path.join(os.path.dirname(__file__), '..', 'serviceAccountKey.json')
-    logger.info(f"Using default credentials path: {credentials_path}")
+# Check if all required Firebase environment variables are set
+required_firebase_vars = [
+    "FIREBASE_PROJECT_ID",
+    "FIREBASE_PRIVATE_KEY",
+    "FIREBASE_CLIENT_EMAIL"
+]
 
-if not os.path.isfile(credentials_path):
-    logger.error(f"Invalid or missing FIREBASE_CREDENTIALS_PATH: {credentials_path}")
-    raise ValueError(f"Invalid or missing FIREBASE_CREDENTIALS_PATH: {credentials_path}")
+if not all(os.getenv(var) for var in required_firebase_vars):
+    missing = [var for var in required_firebase_vars if not os.getenv(var)]
+    logger.error(f"Missing required Firebase environment variables: {', '.join(missing)}")
+    raise ValueError(f"Missing required Firebase environment variables: {', '.join(missing)}")
+
+# Use environment variables for credentials
+logger.info("Using Firebase credentials from environment variables")
+private_key = os.getenv("FIREBASE_PRIVATE_KEY")
+if private_key:
+    private_key = private_key.replace("\\n", "\n")
+
+cred = credentials.Certificate({
+    "type": "service_account",
+    "project_id": os.getenv("FIREBASE_PROJECT_ID"),
+    "private_key_id": os.getenv("FIREBASE_PRIVATE_KEY_ID"),
+    "private_key": private_key,
+    "client_email": os.getenv("FIREBASE_CLIENT_EMAIL"),
+    "client_id": os.getenv("FIREBASE_CLIENT_ID"),
+    "auth_uri": os.getenv("FIREBASE_AUTH_URI", "https://accounts.google.com/o/oauth2/auth"),
+    "token_uri": os.getenv("FIREBASE_TOKEN_URI", "https://oauth2.googleapis.com/token"),
+    "auth_provider_x509_cert_url": os.getenv("FIREBASE_AUTH_PROVIDER_X509_CERT_URL", "https://www.googleapis.com/oauth2/v1/certs"),
+    "client_x509_cert_url": os.getenv("FIREBASE_CLIENT_X509_CERT_URL")
+})
 
 if not firebase_admin._apps:
     try:
-        cred = credentials.Certificate(credentials_path)
         firebase_admin.initialize_app(cred, {
-            'storageBucket': 'creator-co-pilot.appspot.com'
+            'storageBucket': os.getenv("FIREBASE_STORAGE_BUCKET", 'creator-co-pilot.appspot.com')
         })
     except Exception as e:
         logger.error(f"Failed to initialize Firebase Admin SDK: {str(e)}")
@@ -49,13 +68,5 @@ try:
     logger.info("Firebase Storage bucket initialized successfully")
 except Exception as e:
     logger.error(f"Failed to initialize storage bucket 'creator-co-pilot.appspot.com': {str(e)}")
-    logger.info("Trying default bucket name...")
-    try:
-        # Try the default bucket name pattern
-        storage_bucket = storage.bucket()
-        list(storage_bucket.list_blobs(max_results=1))
-        logger.info("Firebase Storage bucket initialized with default name")
-    except Exception as e2:
-        logger.error(f"Failed to initialize storage bucket with default name: {str(e2)}")
-        logger.warning("Firebase Storage is not available. File uploads will use placeholder URLs.")
-        storage_bucket = None
+    logger.warning("Firebase Storage is not available. File uploads will use placeholder URLs.")
+    storage_bucket = None
